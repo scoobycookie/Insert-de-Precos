@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inserir Descontos em Lote</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f8fafc; /* Azul muito claro como fundo da página */
+        }
+        
+        h1 {
+            color: #CC0000; /* Vermelho Atacadão */
+            text-align: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #FFCC00; /* Amarelo Atacadão */
+            background: linear-gradient(to right, #CC0000, #0056b3); /* Gradiente vermelho para azul */
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .form-container {
+            background-color: white;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 86, 179, 0.1); /* Sombra azul suave */
+            margin-bottom: 30px;
+            border-top: 5px solid #CC0000;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid #e0e7ff; /* Borda azul muito clara */
+        }
+        
+        .form-container::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #CC0000 50%, #0056b3 50%); /* Gradiente vermelho-azul */
+        }
+        
+        .message {
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        
+        .error {
+            background-color: #FFEBEE;
+            color: #CC0000;
+            border-left: 4px solid #CC0000;
+        }
+        
+        .success {
+            background-color: #E8F5E9;
+            color: #2E7D32;
+            border-left: 4px solid #2E7D32;
+        }
+        
+        textarea {
+            width: 100%;
+            height: 200px;
+            font-family: 'Courier New', monospace;
+            padding: 10px;
+            border: 2px solid #d1e0ff; /* Azul claro */
+            border-radius: 4px;
+            resize: vertical;
+            margin-bottom: 15px;
+            font-size: 14px;
+            transition: all 0.3s;
+            background-color: #f7faff; /* Fundo azul muito claro */
+        }
+        
+        textarea:focus {
+            border-color: #0056b3; /* Azul mais forte */
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(0, 86, 179, 0.2);
+            background-color: white;
+        }
+        
+        button {
+            padding: 12px 20px;
+            background: linear-gradient(to right, #CC0000, #0056b3); /* Gradiente vermelho-azul */
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s;
+            width: 100%;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 86, 179, 0.3);
+            background: linear-gradient(to right, #B30000, #004799);
+        }
+        
+        button::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to right, rgba(255,255,255,0.2), rgba(255,255,255,0));
+            transform: translateX(-100%);
+            transition: transform 0.4s;
+        }
+        
+        button:hover::after {
+            transform: translateX(100%);
+        }
+        
+        .instructions {
+            background-color: #f0f7ff; /* Azul claro */
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            border-left: 4px solid #0056b3; /* Azul */
+        }
+        
+        .instructions strong {
+            color: #0056b3; /* Azul */
+        }
+        
+        .examples {
+            background-color: #f5f9ff; /* Azul muito claro */
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #d1e0ff;
+        }
+        
+        .example-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #0056b3; /* Azul */
+        }
+        
+        .example-code {
+            font-family: 'Courier New', monospace;
+            white-space: pre;
+            overflow-x: auto;
+            background-color: white;
+            padding: 10px;
+            border-radius: 4px;
+            border: 1px solid #d1e0ff;
+            margin-bottom: 15px;
+            background-color: #f7faff;
+        }
+
+        label strong {
+            color: #0056b3; /* Azul */
+            font-size: 1.1em;
+        }
+
+        /* Efeitos de destaque */
+        .form-container {
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .form-container:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 16px rgba(0, 86, 179, 0.2);
+        }
+    </style>
+</head>
+<body>
+    <h1>Inserir Descontos em Lote</h1>
+    
+    <div class="form-container">
+        {% if error %}
+        <div class="message error">{{ error }}</div>
+        {% endif %}
+        
+        {% if success %}
+        <div class="message success">{{ success }}</div>
+        {% endif %}
+
+        <div class="instructions">
+            <p><strong>Colunas obrigatórias:</strong> {{ required_cols|join(', ') }}</p>
+            <p><strong>Formato de data:</strong> {{ date_format }} (ex: 25/APR/2025)</p>
+            <p><strong>Valor nulo:</strong> Use "null" para campos opcionais</p>
+            <p><strong>Campos opcionais:</strong> QTINI, QTFIM</p>
+        </div>
+
+        <form method="POST">
+            <label for="dados">
+                <strong>Insira os dados abaixo:</strong>
+            </label>
+            <textarea 
+                id="dados" 
+                name="dados" 
+                placeholder="Cole aqui os dados no formato tabular ou CSV" 
+                required
+            >{{ form_data }}</textarea>
+            
+            <button type="submit">Inserir Dados</button>
+        </form>
+    </div>
+
+    <div class="examples">
+        <div class="example-title">📋 Exemplos de formatos aceitos:</div>
+        
+        <div class="example-title">1. Com cabeçalho (CSV):</div>
+        <div class="example-code">CODPRODPRINC,NUMREGIAO,PERCDESC,DTINICIO,DTFIM
+59399,null,15.5,04/APR/2025,07/APR/2025
+3188,7,3.58,08/APR/2025,26/APR/2025</div>
+        
+        <div class="example-title">2. Sem cabeçalho (tabular):</div>
+        <div class="example-code">59399  null  15.5  04/APR/2025  07/APR/2025
+3188   7     3.58  08/APR/2025  26/APR/2025</div>
+        
+        <div class="example-title">3. Com separadores mistos:</div>
+        <div class="example-code">CODPRODPRINC | NUMREGIAO | PERCDESC | DTINICIO   | DTFIM
+59399      | null     | 15.5     | 04/APR/2025 | 07/APR/2025</div>
+    </div>
+</body>
+</html>
